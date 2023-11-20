@@ -1,9 +1,19 @@
 import java.util.*;
 
-
-
 public class Calculator {
 
+    private static final String[] ROMAN_SYMBOLS = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+    private static final int[] ROMAN_VALUES = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+
+    private static final Map<Character, Integer> ROMAN_MAP = Map.of(
+            'I', 1,
+            'V', 5,
+            'X', 10,
+            'L', 50,
+            'C', 100,
+            'D', 500,
+            'M', 1000
+    );
 
     public static String calculate(String input) {
         String[] tokens = input.split(" ");
@@ -19,8 +29,8 @@ public class Calculator {
 
         try {
             if (isRoman) {
-                num1 = convertToInt(tokens[0]);
-                num2 = convertToInt(tokens[2]);
+                num1 = convertToArabic(tokens[0]);
+                num2 = convertToArabic(tokens[2]);
             } else {
                 num1 = Integer.parseInt(tokens[0]);
                 num2 = Integer.parseInt(tokens[2]);
@@ -47,41 +57,25 @@ public class Calculator {
                 result = num1 * num2;
                 break;
             case "/":
-                if (num2 == 0) {
-                    throw new IllegalArgumentException("Деление на ноль");
-                }
                 result = num1 / num2;
                 break;
             default:
                 throw new IllegalArgumentException("Неверная арифметическая операция");
         }
 
-        if (isRoman) {
-            return convertToRoman(result);
-        } else {
-            return String.valueOf(result);
-        }
+        return isRoman ? convertToRoman(result) : String.valueOf(result);
     }
 
     private static boolean isRomanNumeral(String input) {
         return input.matches("[IVXLCDM]+");
     }
 
-    private static int convertToInt(String romanNum) {
-        Map<Character, Integer> romanMap = new HashMap<>();
-        romanMap.put('I', 1);
-        romanMap.put('V', 5);
-        romanMap.put('X', 10);
-        romanMap.put('L', 50);
-        romanMap.put('C', 100);
-        romanMap.put('D', 500);
-        romanMap.put('M', 1000);
-
+    private static int convertToArabic(String romanNum) {
         int arabianNum = 0;
         int prevValue = 0;
 
         for (int i = romanNum.length() - 1; i >= 0; i--) {
-            int currentValue = romanMap.get(romanNum.charAt(i));
+            int currentValue = ROMAN_MAP.get(romanNum.charAt(i));
             if (currentValue < prevValue) {
                 arabianNum -= currentValue;
             } else {
@@ -92,20 +86,17 @@ public class Calculator {
         return arabianNum;
     }
 
-
     private static String convertToRoman(int arabianNum) {
         if (arabianNum < 1) {
             throw new IllegalArgumentException("Римские числа не могут быть отрицательными");
         }
-        String[] romanSymbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
-        int[] romanValues = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
 
         StringBuilder romanNum = new StringBuilder();
         int i = 0;
         while (arabianNum > 0) {
-            if (arabianNum - romanValues[i] >= 0) {
-                romanNum.append(romanSymbols[i]);
-                arabianNum -= romanValues[i];
+            if (arabianNum - ROMAN_VALUES[i] >= 0) {
+                romanNum.append(ROMAN_SYMBOLS[i]);
+                arabianNum -= ROMAN_VALUES[i];
             } else {
                 i++;
             }

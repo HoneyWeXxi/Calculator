@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
 public class Main {
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите арифметическое выражение (например, 3 + 4): ");
@@ -15,7 +16,6 @@ public class Main {
     }
 
     public static String calc(String input) {
-
         return Calculator.calculate(input);
     }
 }
