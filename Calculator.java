@@ -1,34 +1,36 @@
 import java.util.*;
 
-class Calculator {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите арифметическое выражение (например, 3 + 4): ");
-        String input = scanner.nextLine();
-        try {
-            String result = calc(input);
-            System.out.println("Результат: " + result);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
-        scanner.close();
-    }
 
-    public static String calc(String input) {
+
+public class Calculator {
+
+
+    public static String calculate(String input) {
         String[] tokens = input.split(" ");
 
         if (tokens.length != 3) {
-            throw new IllegalArgumentException("Неверное количество аргументов");
+            throw new IllegalArgumentException("Некорректное количество аргументов");
         }
+
+        boolean isRoman = isRomanNumeral(tokens[0]) && isRomanNumeral(tokens[2]);
 
         int num1;
         int num2;
 
         try {
-            num1 = convertToInt(tokens[0]);
-            num2 = convertToInt(tokens[2]);
+            if (isRoman) {
+                num1 = convertToInt(tokens[0]);
+                num2 = convertToInt(tokens[2]);
+            } else {
+                num1 = Integer.parseInt(tokens[0]);
+                num2 = Integer.parseInt(tokens[2]);
+            }
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Неверные числа");
+            throw new IllegalArgumentException("Должны быть только целые числа");
+        }
+
+        if ((num1 < 1 || num1 > 10) || (num2 < 1 || num2 > 10)) {
+            throw new IllegalArgumentException("Числа должны быть от 1 до 10 включительно");
         }
 
         String operator = tokens[1];
@@ -54,7 +56,15 @@ class Calculator {
                 throw new IllegalArgumentException("Неверная арифметическая операция");
         }
 
-        return convertToRoman(result);
+        if (isRoman) {
+            return convertToRoman(result);
+        } else {
+            return String.valueOf(result);
+        }
+    }
+
+    private static boolean isRomanNumeral(String input) {
+        return input.matches("[IVXLCDM]+");
     }
 
     private static int convertToInt(String romanNum) {
@@ -81,6 +91,7 @@ class Calculator {
         }
         return arabianNum;
     }
+
 
     private static String convertToRoman(int arabianNum) {
         if (arabianNum < 1) {
